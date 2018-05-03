@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   attr_accessor :activation_token
+  has_many :microposts , dependent: :destroy
   before_save   { email.downcase! }
   before_create :create_activation_digest
   validates :name , presence: true , length: {maximum: 50 }
@@ -36,6 +37,12 @@ class User < ApplicationRecord
   # 有効化用のメールを送信する
   def send_activation_email
     UserMailer.account_activation(self).deliver_now
+  end
+
+  # 試作feedの定義
+  # 完全な実装は次章の「ユーザーをフォローする」を参照
+  def feed
+    Micropost.where("user_id = ?" , id)
   end
 
   private
